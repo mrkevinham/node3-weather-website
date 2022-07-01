@@ -1,16 +1,15 @@
-const request = require('postman-request')
+const request = require('request')
 
 const forecast = (latitude, longitude, callback) => {
-    const url = `http://api.weatherstack.com/current?access_key=ebde4be1866078cfa8f09004099db0d8&query=${latitude},${longitude}&units=f`
+    const url = 'https://api.darksky.net/forecast/9d1465c6f3bb7a6c71944bdd8548d026/' + latitude + ',' + longitude
 
-    request({url, json:true}, (error, {body}) => {
+    request({ url, json: true }, (error, { body }) => {
         if (error) {
-            callback(`Something went wrong: ${error}`)
+            callback('Unable to connect to weather service!', undefined)
         } else if (body.error) {
-            callback(`Something went wrong: ${body.error.info}`, undefined)
+            callback('Unable to find location', undefined)
         } else {
-            const dataCurrent = body.current
-            callback(undefined, `${dataCurrent.weather_descriptions[0]}. It is currently ${dataCurrent.temperature} degrees out. It feels like ${dataCurrent.feelslike} degrees out.`)
+            callback(undefined, body.daily.data[0].summary + ' It is currently ' + body.currently.temperature + ' degress out. There is a ' + body.currently.precipProbability + '% chance of rain.')
         }
     })
 }
